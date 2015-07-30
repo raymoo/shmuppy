@@ -8,6 +8,8 @@ import Data.Set (Set)
 import qualified Data.Set as S
 import Control.Applicative ((<$>), (<*>))
 
+import Data.Monoid
+
 
 pBulletSize :: Float
 pBulletSize = 20
@@ -82,9 +84,10 @@ player bt bcs pos = (<*> bShot) . fmap Player <$> bbPos
 
 -- | Player shots
 playerShots :: Behavior Time -> Behavior Player -> EvStream (Behavior Bullet)
-playerShots bt bp = snapshots (bp >>= playerShoot bt) shotTimes
-  where goodTime = (< 0.1) . snd . properFraction . (*10) <$> bt
+playerShots bt bp = snapshots (bp >>= playerShoot bt) (shotTimes <> omake)
+  where goodTime = (< 0.5) . snd . properFraction . (*10) <$> bt
         shotTimes = edges $ (&&) . _playerShooting <$> bp <*> goodTime
+        omake = edges $ _playerShooting <$> bp
 
 
 playerShoot :: Behavior Time -> Player -> Behavior (Behavior Bullet)
