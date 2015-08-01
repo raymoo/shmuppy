@@ -19,7 +19,7 @@ data Bullet =
 
 
 -- | Takes a time behavior and a velocity behavior (in units per second) and produces
--- a straight-travelling bullet
+-- a bullet that travels with that velocity (Euler integration).
 velBullet :: Behavior Time -> Behavior (Vector Float) -> Bullet
                   -> Behavior (Behavior Bullet)
 velBullet bt bv (Bullet pos r) = remakeBullet <$> integrate bt bv
